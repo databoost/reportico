@@ -204,7 +204,6 @@ reportico_jquery(\'.reportico-date-field\').daterangepicker({
                     }
 
             }
-            echo $cls;
 
             $del = "";
             if ($add_del) {
