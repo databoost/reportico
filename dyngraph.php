@@ -12,7 +12,7 @@
  */
 
 
-	ini_set("memory_limit","100M");
+	ini_set("memory_limit", getenv("REPORTICO_MEMORY_LIMIT") ?: "512M");
 	error_reporting(E_ALL);
     date_default_timezone_set(@date_default_timezone_get());
 

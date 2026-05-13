@@ -22,7 +22,8 @@ error_reporting(E_ALL);
 date_default_timezone_set(@date_default_timezone_get());
 
 // Reserver 100Mb for running
-ini_set("memory_limit","100M");
+// Large reports (many rows × assignments / PDF / grids) can exceed 100M; allow more headroom.
+ini_set("memory_limit", getenv("REPORTICO_MEMORY_LIMIT") ?: "512M");
 
 // Allow a good time for long reports to run. Set to 0 to allow unlimited time
 ini_set("max_execution_time","90");
