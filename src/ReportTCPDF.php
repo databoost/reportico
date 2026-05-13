@@ -25,6 +25,12 @@ class ReportTCPDF extends Report
     public $abs_col_left_margin;
     public $abs_left_margin;
     public $abs_right_margin;
+    // PHP 8.2+: declare these explicitly to avoid Creation-of-dynamic-property deprecations.
+    public $abs_row_right_margin;
+    public $abs_col_right_margin;
+    public $abs_row_width;
+    public $abs_columns_width;
+    public $column_spacing = 0;
     public $abs_page_width = 0;
     public $abs_page_height = 0;
     public $abs_print_width = 0;
@@ -3244,7 +3250,9 @@ class ReportTCPDF extends Report
         $this->newReportPageLineByStyle("LINEPAGE$txt", $this->mid_page_page_styles, false);
     }
 
-    public function newReportPageLineByStyle($txt = "", &$styles, $blankline = false)
+    // PHP 8.0+: optional parameters cannot precede required ones; $styles is by-ref/required,
+    // so $txt must also be required (callers always pass it explicitly).
+    public function newReportPageLineByStyle($txt, &$styles, $blankline = false)
     {
         // Line page wrapper
         $this->applyStyleTags("$txt", $styles);
