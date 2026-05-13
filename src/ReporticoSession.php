@@ -299,6 +299,12 @@ class ReporticoSession
         if (!$namespace)
             $namespace = ReporticoApp::get("session_namespace_key");
 
+        // PHP 8.1+: $_SESSION[null] triggers "Using null as an array offset is deprecated".
+        // If the namespace key is not yet set there is no session bucket to write to.
+        if ($namespace === null || $namespace === "") {
+            return;
+        }
+
         //echo "Set $namespace:$param<BR>";
         if (!$array) {
             $_SESSION[$namespace][$param] = $value;
@@ -386,7 +392,9 @@ class ReporticoSession
     static function initializeReporticoNamespace($namespace = "reportico")
     {
         $namespace = ReporticoApp::get("session_namespace_key");
-        if (isset($_SESSION[$namespace])) {
+        // PHP 8.1+: $_SESSION[null] triggers "Using null as an array offset is deprecated".
+        // Nothing to clear if the namespace key has not been set.
+        if ($namespace !== null && $namespace !== "" && isset($_SESSION[$namespace])) {
             unset($_SESSION[$namespace]);
         }
 
