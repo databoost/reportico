@@ -2308,7 +2308,7 @@ class XmlReader
                 break;
             case "mainqueroutppgft":$importtype = "IMPORT";
                 break;
-            default;
+            default:
                 $importtype = false;
         }
 

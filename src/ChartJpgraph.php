@@ -575,7 +575,7 @@ class ChartJpgraph
 					$graph->Add($lplot[$lplotct]);
 						break;
 				case "LINE":
-				default;
+				default:
 					if ( count($v["data"]) == 1 )
 						$v["data"][] = 0;
 					$lplot[$lplotct]=new LinePlot($v["data"]);

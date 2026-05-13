@@ -828,7 +828,7 @@ class ChartPchart
                     $image->writeValues($data->GetData(), $data->GetDataDescription(), $series2);
                     break;
                 case "LINE":
-                default;
+                default:
                     if ($linedrawn) {
                         break;
                     }
