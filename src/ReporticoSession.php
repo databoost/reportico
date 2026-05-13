@@ -195,7 +195,13 @@ class ReporticoSession
      */
     static function existsReporticoSession()
     {
-        if (isset($_SESSION[ReporticoApp::get("session_namespace_key")])) {
+        $key = ReporticoApp::get("session_namespace_key");
+        // PHP 8.1+: $_SESSION[null] triggers "Using null as an array offset is deprecated".
+        // When session_namespace_key has not been set yet, the namespace by definition does not exist.
+        if ($key === null || $key === "") {
+            return false;
+        }
+        if (isset($_SESSION[$key])) {
             return true;
         } else {
             return false;
@@ -269,7 +275,12 @@ class ReporticoSession
     {
         if (!$session_name)
             $session_name = ReporticoApp::get("session_namespace_key");
-        
+
+        // PHP 8.1+: $_SESSION[null] triggers "Using null as an array offset is deprecated".
+        if ($session_name === null || $session_name === "") {
+            return false;
+        }
+
         return isset($_SESSION[$session_name][$param]);
     }
 
@@ -321,8 +332,13 @@ class ReporticoSession
      */
     static function unsetReporticoSessionParam($param)
     {
-        if (isset($_SESSION[ReporticoApp::get("session_namespace_key")][$param])) {
-            unset($_SESSION[ReporticoApp::get("session_namespace_key")][$param]);
+        $key = ReporticoApp::get("session_namespace_key");
+        // PHP 8.1+: $_SESSION[null] triggers "Using null as an array offset is deprecated".
+        if ($key === null || $key === "") {
+            return;
+        }
+        if (isset($_SESSION[$key][$param])) {
+            unset($_SESSION[$key][$param]);
         }
     }
 
