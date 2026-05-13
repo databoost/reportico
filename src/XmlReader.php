@@ -397,9 +397,10 @@ class XmlReader
             $this->field_display["YTickLabelInterval"]["Type"] = "HIDE";
         }
 
-        xml_set_object($this->parser, $this);
-        xml_set_element_handler($this->parser, 'startElement', 'endElement');
-        xml_set_character_data_handler($this->parser, 'cdata');
+        // PHP 8.4 deprecated xml_set_object() and string-name callbacks for xml_set_*_handler().
+        // Pass [object, methodName] callables instead, which are also valid in PHP 7.4+.
+        xml_set_element_handler($this->parser, [$this, 'startElement'], [$this, 'endElement']);
+        xml_set_character_data_handler($this->parser, [$this, 'cdata']);
         xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, false);
 
         // 1 = single field, 2 = array field, 3 = record container
@@ -520,7 +521,8 @@ class XmlReader
 
         if ($x) {
             xml_parse($this->parser, $x);
-            xml_parser_free($this->parser);
+            // xml_parser_free() was deprecated in PHP 8.5 (no-op since 8.0).
+            // Parser is freed automatically when $this->parser goes out of scope.
         }
 
         //var_dump($this->data);
