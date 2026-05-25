@@ -28,7 +28,7 @@ date_default_timezone_set(@date_default_timezone_get());
 ini_set("memory_limit", getenv("REPORTICO_MEMORY_LIMIT") ?: "512M");
 
 // Allow a good time for long reports to run. Set to 0 to allow unlimited time
-ini_set("max_execution_time","90");
+ini_set("max_execution_time", getenv("REPORTICO_MAX_EXECUTION_TIME") ?: "300");
 
 // Instantiate Reportico
 $q = new Reportico\Engine\Reportico();
