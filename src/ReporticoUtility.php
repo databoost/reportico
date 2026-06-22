@@ -159,6 +159,11 @@ class ReporticoUtility
     // Look for a file in the include path, or the path of the current source file
     static function findFileToInclude($file_path, &$new_file_path, &$rel_to_include = "")
     {
+        if (!$file_path || !is_string($file_path)) {
+            $new_file_path = $file_path;
+            return false;
+        }
+
         // First look in path of current file
         static $_path_array = null;
         if (__DIR__) {

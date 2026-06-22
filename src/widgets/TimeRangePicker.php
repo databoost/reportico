@@ -29,6 +29,7 @@ class TimeRangePicker extends Widget
     public $range_end = false;
     public $range_raw = false;
     public $derived = false;
+    public $range_name = false;
 
     public $options = [
            "Today" => [

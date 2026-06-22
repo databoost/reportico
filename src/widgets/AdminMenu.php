@@ -131,6 +131,9 @@ class AdminMenu extends Widget
                     if (is_dir(ReporticoApp::get("projpath"))) {
                         if ($dh = opendir(ReporticoApp::get("projpath"))) {
                             while (($file = readdir($dh)) !== false) {
+                                if (!preg_match('/\.xml$/i', $file)) {
+                                    continue;
+                                }
                                 $mtch = "/" . $menuitem["report"] . "/";
                                 if (preg_match($mtch, $file)) {
                                     $repxml = new XmlReader($this->engine, $file, false, "ReportTitle");
