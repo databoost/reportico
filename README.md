@@ -42,6 +42,27 @@ See instructions here ..
 
 http://reportico.org/site2/release-6.0.0-beta
 
+
+## PHP 8.5 vendor patches (ADOdb / Reportico / XmlReader)
+
+These diffs target a **composer-installed Reportico 8.1.0** tree with vendored ADOdb (MacPorts PHP 8.5). Use them for upstream reference or to re-apply on a deployment host after upgrades.
+
+They address ADOdb `(integer)` → `(int)`, `ADODB_pdo::$_nestedSQL`, and `XmlReader` XML API changes.
+
+Files in `patches/`:
+
+- `patches/adodb-php85-compat.patch`
+- `patches/reportico-php85-compat.patch`
+- `patches/reportico-8.1.0-php85-compat.patch` — combined (ADODB + reportico-web) bundle
+
+Example (adjust `-p` and paths to match your install root, e.g. `/opt/local/www/html/reports-reportico/reportico-8.1.0`):
+
+```bash
+patch -p1 -d /path/to/reportico-8.1.0 < patches/reportico-8.1.0-php85-compat.patch
+```
+
+Operational context (mounts, SSH, web paths) for the automation host lives in the sibling **ops-etl** repo: `../ops-etl` and `.cursor/rules/onprintshop-remote.mdc` there.
+
 ## Screenshots
 
 ![Criteria Page](/images/reportico_prepare.png?raw=true "Criteria Page")

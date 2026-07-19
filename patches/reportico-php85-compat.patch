@@ -1,0 +1,24 @@
+--- a/src/XmlReader.php	2023-01-07 09:23:02.000000000 -0800
++++ b/src/XmlReader.php	2026-05-12 08:55:49.000000000 -0700
+@@ -397,9 +397,9 @@
+             $this->field_display["YTickLabelInterval"]["Type"] = "HIDE";
+         }
+ 
+-        xml_set_object($this->parser, $this);
+-        xml_set_element_handler($this->parser, 'startElement', 'endElement');
+-        xml_set_character_data_handler($this->parser, 'cdata');
++        
++        xml_set_element_handler($this->parser, [$this, "startElement"], [$this, "endElement"]);
++        xml_set_character_data_handler($this->parser, [$this, "cdata"]);
+         xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, false);
+ 
+         // 1 = single field, 2 = array field, 3 = record container
+@@ -520,7 +520,7 @@
+ 
+         if ($x) {
+             xml_parse($this->parser, $x);
+-            xml_parser_free($this->parser);
++            // xml_parser_free($this->parser);
+         }
+ 
+         //var_dump($this->data);

@@ -1,0 +1,488 @@
+diff -ruN --exclude=.git a/adodb-csvlib.inc.php b/adodb-csvlib.inc.php
+--- a/adodb-csvlib.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/adodb-csvlib.inc.php	2026-05-12 08:33:08.000000000 -0700
+@@ -142,7 +142,7 @@
+ 					$rs->EOF = true;
+ 					$rs->_numOfFields = 0;
+ 					$rs->sql = urldecode($meta[2]);
+-					$rs->affectedrows = (integer)$meta[3];
++					$rs->affectedrows = (int)$meta[3];
+ 					$rs->insertid = $meta[4];
+ 					return $rs;
+ 				}
+@@ -156,7 +156,7 @@
+ 			# +0 sec after timeout, give processes 100% chance of timing out
+ 				if (sizeof($meta) > 1) {
+ 					if($timeout >0){
+-						$tdiff = (integer)( $meta[1]+$timeout - time());
++						$tdiff = (int)( $meta[1]+$timeout - time());
+ 						if ($tdiff <= 2) {
+ 							switch($tdiff) {
+ 							case 4:
+diff -ruN --exclude=.git a/adodb-error.inc.php b/adodb-error.inc.php
+--- a/adodb-error.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/adodb-error.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -107,7 +107,7 @@
+ 
+ function adodb_error_pg($errormsg)
+ {
+-	if (is_numeric($errormsg)) return (integer) $errormsg;
++	if (is_numeric($errormsg)) return (int) $errormsg;
+ 	// Postgres has no lock-wait timeout.  The best we could do would be to set a statement timeout.
+ 	static $error_regexps = array(
+ 			'(Table does not exist\.|Relation [\"\'].*[\"\'] does not exist|sequence does not exist|class ".+" not found)$' => DB_ERROR_NOSUCHTABLE,
+diff -ruN --exclude=.git a/adodb-lib.inc.php b/adodb-lib.inc.php
+--- a/adodb-lib.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/adodb-lib.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -1129,7 +1129,7 @@
+ 		case "I":
+ 		case "R":
+ 			$val = $arrFields[$fname];
+-			if (!is_numeric($val)) $val = (integer) $val;
++			if (!is_numeric($val)) $val = (int) $val;
+ 			break;
+ 
+ 		default:
+diff -ruN --exclude=.git a/adodb-pager.inc.php b/adodb-pager.inc.php
+--- a/adodb-pager.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/adodb-pager.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -68,7 +68,7 @@
+ 		$next_page = $id.'_next_page';
+ 
+ 		if (isset($_GET[$next_page])) {
+-			$_SESSION[$curr_page] = (integer) $_GET[$next_page];
++			$_SESSION[$curr_page] = (int) $_GET[$next_page];
+ 		}
+ 		if (empty($_SESSION[$curr_page])) $_SESSION[$curr_page] = 1; ## at first page
+ 
+diff -ruN --exclude=.git a/adodb-perf.inc.php b/adodb-perf.inc.php
+--- a/adodb-perf.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/adodb-perf.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -33,7 +33,7 @@
+ function adodb_getmem()
+ {
+ 	if (function_exists('memory_get_usage'))
+-		return (integer) ((memory_get_usage()+512)/1024);
++		return (int) ((memory_get_usage()+512)/1024);
+ 
+ 	$pid = getmypid();
+ 
+@@ -49,7 +49,7 @@
+ 	if (sizeof($output) == 0) return 0;
+ 
+ 	$memarr = explode(' ',$output[0]);
+-	if (sizeof($memarr)>=2) return (integer) $memarr[1];
++	if (sizeof($memarr)>=2) return (int) $memarr[1];
+ 
+ 	return 0;
+ }
+@@ -358,7 +358,7 @@
+ 		if (!$info) return false;
+ 
+ 		if (strncmp(PHP_OS,'WIN',3)==0) {
+-			return (integer) $info[0];
++			return (int) $info[0];
+ 		}else {
+ 			if (empty($this->_lastLoad)) {
+ 				sleep(1);
+@@ -598,7 +598,7 @@
+ 		$arr[0] = (float)$this->DBParameter('data cache hit ratio');
+ 		$arr[1] = (float)$this->DBParameter('data reads');
+ 		$arr[2] = (float)$this->DBParameter('data writes');
+-		$arr[3] = (integer) $this->DBParameter('current connections');
++		$arr[3] = (int) $this->DBParameter('current connections');
+ 		return $arr;
+ 	}
+ 
+@@ -704,7 +704,7 @@
+ 	 else $do = 'stats';
+ 
+ 	if (isset($_GET['nsql'])) {
+-		if ($_GET['nsql'] > 0) $nsql = $_SESSION['ADODB_PERF_SQL'] = (integer) $_GET['nsql'];
++		if ($_GET['nsql'] > 0) $nsql = $_SESSION['ADODB_PERF_SQL'] = (int) $_GET['nsql'];
+ 	}
+ 	echo "<title>ADOdb Performance Monitor on $app</title><body bgcolor=white>";
+ 	if ($do == 'viewsql') $form = "<td><form># SQL:<input type=hidden value=viewsql name=do> <input type=text size=4 name=nsql value=$nsql><input type=submit value=Go></td></form>";
+@@ -973,7 +973,7 @@
+ 					rs2html($rs);
+ 				}
+ 			} else {
+-				$e1 = (integer) $this->conn->ErrorNo();
++				$e1 = (int) $this->conn->ErrorNo();
+ 				$e2 = $this->conn->ErrorMsg();
+ 				if (($e1) || ($e2)) {
+ 					if (empty($e1)) $e1 = '-1'; // postgresql fix
+diff -ruN --exclude=.git a/adodb-time.inc.php b/adodb-time.inc.php
+--- a/adodb-time.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/adodb-time.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -685,8 +685,8 @@
+ {
+ 	if ($y < 100) {
+ 
+-		$yr = (integer) date("Y");
+-		$century = (integer) ($yr /100);
++		$yr = (int) date("Y");
++		$century = (int) ($yr /100);
+ 
+ 		if ($yr%100 > 50) {
+ 			$c1 = $century + 1;
+diff -ruN --exclude=.git a/adodb.inc.php b/adodb.inc.php
+--- a/adodb.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/adodb.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -2127,7 +2127,7 @@
+ 			return false;
+ 		}
+ 
+-		$midrow = (integer) ($total/2);
++		$midrow = (int) ($total/2);
+ 		$rs = $this->SelectLimit("select $field from $table $where order by 1",1,$midrow);
+ 		if ($rs && !$rs->EOF) {
+ 			return reset($rs->fields);
+@@ -5638,10 +5638,10 @@
+ 										$nconnect = true; $persist = true; break;
+ 					case 'persist':
+ 					case 'persistent':	$persist = $v; break;
+-					case 'debug':		$obj->debug = (integer) $v; break;
++					case 'debug':		$obj->debug = (int) $v; break;
+ 					#ibase
+ 					case 'role':		$obj->role = $v; break;
+-					case 'dialect':	$obj->dialect = (integer) $v; break;
++					case 'dialect':	$obj->dialect = (int) $v; break;
+ 					case 'charset':		$obj->charset = $v; $obj->charSet=$v; break;
+ 					case 'buffers':		$obj->buffers = $v; break;
+ 					case 'fetchmode':   $obj->SetFetchMode($v); break;
+diff -ruN --exclude=.git a/drivers/adodb-ado.inc.php b/drivers/adodb-ado.inc.php
+--- a/drivers/adodb-ado.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-ado.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -411,7 +411,7 @@
+ 		//	$rs->AbsolutePosition->$row-2;
+ 		//	return true;
+ 		if ($this->_currentRow > $row) return false;
+-		@$rs->Move((integer)$row - $this->_currentRow-1); //adBookmarkFirst
++		@$rs->Move((int)$row - $this->_currentRow-1); //adBookmarkFirst
+ 		return true;
+ 	}
+ 
+diff -ruN --exclude=.git a/drivers/adodb-ado5.inc.php b/drivers/adodb-ado5.inc.php
+--- a/drivers/adodb-ado5.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-ado5.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -452,7 +452,7 @@
+ 		//	$rs->AbsolutePosition->$row-2;
+ 		//	return true;
+ 		if ($this->_currentRow > $row) return false;
+-		@$rs->Move((integer)$row - $this->_currentRow-1); //adBookmarkFirst
++		@$rs->Move((int)$row - $this->_currentRow-1); //adBookmarkFirst
+ 		return true;
+ 	}
+ 
+diff -ruN --exclude=.git a/drivers/adodb-ads.inc.php b/drivers/adodb-ads.inc.php
+--- a/drivers/adodb-ads.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-ads.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -371,7 +371,7 @@
+ 	*/
+ 	function ODBCTypes($t)
+ 	{
+-		switch ((integer)$t) {
++		switch ((int)$t) {
+ 			case 1:
+ 			case 12:
+ 			case 0:
+diff -ruN --exclude=.git a/drivers/adodb-csv.inc.php b/drivers/adodb-csv.inc.php
+--- a/drivers/adodb-csv.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-csv.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -103,7 +103,7 @@
+ 		$at = strpos($err,'::::');
+ 		if ($at === false) {
+ 			$this->_errorMsg = $err;
+-			$this->_errorNo = (integer)$err;
++			$this->_errorNo = (int)$err;
+ 		} else {
+ 			$this->_errorMsg = substr($err,$at+4,1024);
+ 			$this->_errorNo = -9999;
+@@ -159,7 +159,7 @@
+ 		$at = strpos($err,'::::');
+ 		if ($at === false) {
+ 			$this->_errorMsg = $err;
+-			$this->_errorNo = (integer)$err;
++			$this->_errorNo = (int)$err;
+ 		} else {
+ 			$this->_errorMsg = substr($err,$at+4,1024);
+ 			$this->_errorNo = -9999;
+diff -ruN --exclude=.git a/drivers/adodb-db2.inc.php b/drivers/adodb-db2.inc.php
+--- a/drivers/adodb-db2.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-db2.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -520,7 +520,7 @@
+ 
+ 	function selectLimit($sql,$nrows=-1,$offset=-1,$inputArr=false,$secs2cache=0)
+ 	{
+-		$nrows = (integer) $nrows;
++		$nrows = (int) $nrows;
+ 
+ 		if ($offset <= 0)
+ 		{
+@@ -1042,7 +1042,7 @@
+ */
+ 	function DB2Types($t)
+ 	{
+-		switch ((integer)$t) {
++		switch ((int)$t) {
+ 		case 1:
+ 		case 12:
+ 		case 0:
+diff -ruN --exclude=.git a/drivers/adodb-db2oci.inc.php b/drivers/adodb-db2oci.inc.php
+--- a/drivers/adodb-db2oci.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-db2oci.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -101,7 +101,7 @@
+ 					$ch2 = $at < $lensql ? $sql[$at] : '';
+ 				} while ('0' <= $ch && $ch <= '9');
+ 				#echo "$n $arrsize ] ";
+-				$n = (integer) $n;
++				$n = (int) $n;
+ 				if ($n < $arrsize) {
+ 					$sql2 .= substr($sql,$nprev,$nat-$nprev-1).'?';
+ 					$nprev = $at-1;
+diff -ruN --exclude=.git a/drivers/adodb-db2ora.inc.php b/drivers/adodb-db2ora.inc.php
+--- a/drivers/adodb-db2ora.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-db2ora.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -41,7 +41,7 @@
+ function _colontrack($p)
+ {
+ 	global $_COLONARR, $_COLONSZ;
+-	$v = (integer) substr($p[1], 1);
++	$v = (int) substr($p[1], 1);
+ 	if ($v > $_COLONSZ) return $p[1];
+ 	$_COLONARR[] = $v;
+ 	return '?';
+diff -ruN --exclude=.git a/drivers/adodb-firebird.inc.php b/drivers/adodb-firebird.inc.php
+--- a/drivers/adodb-firebird.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-firebird.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -427,7 +427,7 @@
+ 			$rs = $this->Execute($getnext);
+ 		}
+ 		if ($rs && !$rs->EOF) {
+-			$this->genID = (integer) reset($rs->fields);
++			$this->genID = (int) reset($rs->fields);
+ 		}
+ 		else {
+ 			$this->genID = 0; // false
+@@ -454,7 +454,7 @@
+ 
+ 	public function errorNo()
+ 	{
+-		return (integer) $this->_errorCode;
++		return (int) $this->_errorCode;
+ 	}
+ 
+ 	function errorMsg()
+@@ -989,8 +989,8 @@
+ 	 */
+ 	public function selectLimit($sql,$nrows=-1,$offset=-1,$inputarr=false, $secs2cache=0)
+ 	{
+-		$nrows = (integer) $nrows;
+-		$offset = (integer) $offset;
++		$nrows = (int) $nrows;
++		$offset = (int) $offset;
+ 		$str = 'SELECT ';
+ 		if ($nrows >= 0) $str .= "FIRST $nrows ";
+ 		$str .=($offset>=0) ? "SKIP $offset " : '';
+diff -ruN --exclude=.git a/drivers/adodb-ibase.inc.php b/drivers/adodb-ibase.inc.php
+--- a/drivers/adodb-ibase.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-ibase.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -289,7 +289,7 @@
+ 			$rs = $this->Execute($getnext);
+ 		}
+ 		if ($rs && !$rs->EOF) {
+-			$this->genID = (integer) reset($rs->fields);
++			$this->genID = (int) reset($rs->fields);
+ 		}
+ 		else {
+ 			$this->genID = 0; // false
+@@ -314,7 +314,7 @@
+ 
+ 	function ErrorNo()
+ 	{
+-		if (preg_match('/error code = ([\-0-9]*)/i', $this->_errorMsg,$arr)) return (integer) $arr[1];
++		if (preg_match('/error code = ([\-0-9]*)/i', $this->_errorMsg,$arr)) return (int) $arr[1];
+ 		else return 0;
+ 	}
+ 
+diff -ruN --exclude=.git a/drivers/adodb-ldap.inc.php b/drivers/adodb-ldap.inc.php
+--- a/drivers/adodb-ldap.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-ldap.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -101,11 +101,11 @@
+ /*
+ 	Valid Domain Values for LDAP Options:
+ 
+-	LDAP_OPT_DEREF (integer)
+-	LDAP_OPT_SIZELIMIT (integer)
+-	LDAP_OPT_TIMELIMIT (integer)
+-	LDAP_OPT_PROTOCOL_VERSION (integer)
+-	LDAP_OPT_ERROR_NUMBER (integer)
++	LDAP_OPT_DEREF (int)
++	LDAP_OPT_SIZELIMIT (int)
++	LDAP_OPT_TIMELIMIT (int)
++	LDAP_OPT_PROTOCOL_VERSION (int)
++	LDAP_OPT_ERROR_NUMBER (int)
+ 	LDAP_OPT_REFERRALS (boolean)
+ 	LDAP_OPT_RESTART (boolean)
+ 	LDAP_OPT_HOST_NAME (string)
+diff -ruN --exclude=.git a/drivers/adodb-odbc.inc.php b/drivers/adodb-odbc.inc.php
+--- a/drivers/adodb-odbc.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-odbc.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -351,7 +351,7 @@
+ */
+ 	function ODBCTypes($t)
+ 	{
+-		switch ((integer)$t) {
++		switch ((int)$t) {
+ 		case 1:
+ 		case 12:
+ 		case 0:
+diff -ruN --exclude=.git a/drivers/adodb-odbc_db2.inc.php b/drivers/adodb-odbc_db2.inc.php
+--- a/drivers/adodb-odbc_db2.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-odbc_db2.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -212,7 +212,7 @@
+ 
+ 	function SelectLimit($sql, $nrows = -1, $offset = -1, $inputArr = false, $secs2cache = 0)
+ 	{
+-		$nrows = (integer) $nrows;
++		$nrows = (int) $nrows;
+ 		if ($offset <= 0) {
+ 		// could also use " OPTIMIZE FOR $nrows ROWS "
+ 			if ($nrows >= 0) $sql .=  " FETCH FIRST $nrows ROWS ONLY ";
+diff -ruN --exclude=.git a/drivers/adodb-pdo.inc.php b/drivers/adodb-pdo.inc.php
+--- a/drivers/adodb-pdo.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-pdo.inc.php	2026-05-12 08:55:38.000000000 -0700
+@@ -72,7 +72,8 @@
+ 	var $fmtTimeStamp = "'Y-m-d, h:i:sA'";
+ 	var $replaceQuote = "''"; // string to use to replace quotes
+ 	var $hasAffectedRows = true;
+-	var $_bindInputArray = true;
++	var $_bindInputArray = true;
++	var $_nestedSQL = false;
+ 	var $_genIDSQL;
+ 	var $_genSeqSQL = "create table %s (id integer)";
+ 	var $_dropSeqSQL;
+@@ -396,7 +396,7 @@
+ 			if (sizeof($arr)<2) {
+ 				return '';
+ 			}
+-			if ((integer)$arr[0]) {
++			if ((int)$arr[0]) {
+ 				return $arr[2];
+ 			}
+ 			else {
+@@ -609,7 +609,7 @@
+ 		if ($stmt) {
+ 
+ 			$arr = $stmt->errorinfo();
+-			if ((integer)$arr[1]) {
++			if ((int)$arr[1]) {
+ 				$this->_errormsg = $arr[2];
+ 				$this->_errorno = $arr[1];
+ 			}
+@@ -742,7 +742,7 @@
+ 		}
+ 
+ 		if (is_array($arr)) {
+-			if ((integer) $arr[0] && isset($arr[2])) {
++			if ((int) $arr[0] && isset($arr[2])) {
+ 				return $arr[2];
+ 			}
+ 			else {
+diff -ruN --exclude=.git a/drivers/adodb-pdo_dblib.inc.php b/drivers/adodb-pdo_dblib.inc.php
+--- a/drivers/adodb-pdo_dblib.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-pdo_dblib.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -163,7 +163,7 @@
+ 		if ($stmt) {
+ 
+ 			$arr = $stmt->errorinfo();
+-			if ((integer)$arr[1]) {
++			if ((int)$arr[1]) {
+ 				$this->_errormsg = $arr[2];
+ 				$this->_errorno = $arr[1];
+ 			}
+diff -ruN --exclude=.git a/drivers/adodb-pdo_firebird.inc.php b/drivers/adodb-pdo_firebird.inc.php
+--- a/drivers/adodb-pdo_firebird.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-pdo_firebird.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -259,7 +259,7 @@
+ 			$rs = $this->execute($getnext);
+ 		}
+ 		if ($rs && !$rs->EOF) {
+-			$this->genID = (integer)reset($rs->fields);
++			$this->genID = (int)reset($rs->fields);
+ 		} else {
+ 			$this->genID = 0; // false
+ 		}
+@@ -273,8 +273,8 @@
+ 
+ 	public function selectLimit($sql, $nrows = -1, $offset = -1, $inputarr = false, $secs = 0)
+ 	{
+-		$nrows = (integer)$nrows;
+-		$offset = (integer)$offset;
++		$nrows = (int)$nrows;
++		$offset = (int)$offset;
+ 		$str = 'SELECT ';
+ 		if ($nrows >= 0) {
+ 			$str .= "FIRST $nrows ";
+diff -ruN --exclude=.git a/drivers/adodb-postgres7.inc.php b/drivers/adodb-postgres7.inc.php
+--- a/drivers/adodb-postgres7.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-postgres7.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -117,8 +117,8 @@
+ 	{
+ 		$nrows = (int) $nrows;
+ 		$offset = (int) $offset;
+-		$offsetStr = ($offset >= 0) ? " OFFSET ".((integer)$offset) : '';
+-		$limitStr  = ($nrows >= 0)  ? " LIMIT ".((integer)$nrows) : '';
++		$offsetStr = ($offset >= 0) ? " OFFSET ".((int)$offset) : '';
++		$limitStr  = ($nrows >= 0)  ? " LIMIT ".((int)$nrows) : '';
+ 		if ($secs2cache)
+ 			$rs = $this->CacheExecute($secs2cache,$sql."$limitStr$offsetStr",$inputarr);
+ 		else
+diff -ruN --exclude=.git a/drivers/adodb-sqlanywhere.inc.php b/drivers/adodb-sqlanywhere.inc.php
+--- a/drivers/adodb-sqlanywhere.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-sqlanywhere.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -55,7 +55,7 @@
+ 
+    $fd = fopen ($filename, "rb");
+ 
+-   $integer_chunks = (integer)filesize($filename) / $chunk_size;
++   $integer_chunks = (int)filesize($filename) / $chunk_size;
+    $modulus = filesize($filename) % $chunk_size;
+    if ($modulus != 0){
+ 	$integer_chunks += 1;
+@@ -83,7 +83,7 @@
+   function load_blobvar_from_var($blobVarName, &$varName) {
+    $chunk_size = 1000;
+ 
+-   $integer_chunks = (integer)strlen($varName) / $chunk_size;
++   $integer_chunks = (int)strlen($varName) / $chunk_size;
+    $modulus = strlen($varName) % $chunk_size;
+    if ($modulus != 0){
+ 	$integer_chunks += 1;
+diff -ruN --exclude=.git a/drivers/adodb-sybase.inc.php b/drivers/adodb-sybase.inc.php
+--- a/drivers/adodb-sybase.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-sybase.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -188,8 +188,8 @@
+ 			return $rs;
+ 		}
+ 
+-		$nrows = (integer) $nrows;
+-		$offset = (integer) $offset;
++		$nrows = (int) $nrows;
++		$offset = (int) $offset;
+ 
+ 		$cnt = ($nrows >= 0) ? $nrows : 999999999;
+ 		if ($offset > 0 && $cnt) $cnt += $offset;
+diff -ruN --exclude=.git a/drivers/adodb-text.inc.php b/drivers/adodb-text.inc.php
+--- a/drivers/adodb-text.inc.php	2023-01-07 08:02:25.000000000 -0800
++++ b/drivers/adodb-text.inc.php	2026-05-12 08:33:07.000000000 -0700
+@@ -250,7 +250,7 @@
+ 		preg_match("/$eregword/",$orderby,$arr);
+ 		if (sizeof($arr) < 2) return $this; // actually invalid sql
+ 		$col = $arr[1];
+-		$at = (integer) $col;
++		$at = (int) $col;
+ 		if ($at == 0) {
+ 			$i = 0;
+ 			reset($projnames);
