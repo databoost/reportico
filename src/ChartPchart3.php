@@ -778,7 +778,7 @@ $graph->SetGridDepth(DEPTH_FRONT);
 
                     break;
                 case "LINE":
-                default;
+                default:
 
                     if (count($v["data"]) == 1) {
                         $v["data"][] = 0;

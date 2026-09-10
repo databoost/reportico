@@ -30,6 +30,10 @@ class Criteria extends Widget
     public $buttonTypes = array();
     public $formTypes = array();
 
+    // PHP 8.2+: declared explicitly to avoid Creation-of-dynamic-property deprecation.
+    // Populated by Widget::handleUrlParameters() when criteria_type is "DATE" (passed by reference into ReporticoLocale::convertDateRangeDefaultsToDates()).
+    public $range_start = false;
+
     public function __construct($engine, $load = false, $engineCriteria = false )
     {
 

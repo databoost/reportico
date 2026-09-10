@@ -280,6 +280,22 @@ class QueryColumn extends ReporticoObject
     public function getValueDelimiter()
     {
         if (strtoupper($this->column_type) == "CHAR") {
+            // PostgreSQL (and the SQL standard) use single quotes for string literals.
+            // Double quotes delimit identifiers, so a date like "2026-05-13" is parsed as a
+            // column name and fails with "column does not exist" — uncaught PDOException → WSOD.
+            $driver = "";
+            if ($this->datasource && !empty($this->datasource->_conn_driver)) {
+                $driver = strtolower((string) $this->datasource->_conn_driver);
+            }
+            if (
+                $driver === "pdo_pgsql"
+                || $driver === "postgres"
+                || $driver === "pgsql"
+                || str_contains($driver, "pgsql")
+            ) {
+                return "'";
+            }
+
             return ("\"");
         }
 

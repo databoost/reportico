@@ -397,9 +397,10 @@ class XmlReader
             $this->field_display["YTickLabelInterval"]["Type"] = "HIDE";
         }
 
-        xml_set_object($this->parser, $this);
-        xml_set_element_handler($this->parser, 'startElement', 'endElement');
-        xml_set_character_data_handler($this->parser, 'cdata');
+        // PHP 8.4 deprecated xml_set_object() and string-name callbacks for xml_set_*_handler().
+        // Pass [object, methodName] callables instead, which are also valid in PHP 7.4+.
+        xml_set_element_handler($this->parser, [$this, 'startElement'], [$this, 'endElement']);
+        xml_set_character_data_handler($this->parser, [$this, 'cdata']);
         xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, false);
 
         // 1 = single field, 2 = array field, 3 = record container
@@ -467,7 +468,11 @@ class XmlReader
                     echo "XML $filename<BR>";
                 }
                 if ($this->query) {
-                    $readfile = $this->query->projects_folder . "/" . ReporticoApp::getConfig("project") . "/" . $filename;
+                    if (!empty($this->query->reports_path)) {
+                        $readfile = $this->query->reports_path . "/" . $filename;
+                    } else {
+                        $readfile = $this->query->projects_folder . "/" . ReporticoApp::getConfig("project") . "/" . $filename;
+                    }
                     $adminfile = $this->query->admin_projects_folder . "/admin/" . $filename;
                 } else {
                     $readfile = $filename;
@@ -492,27 +497,27 @@ class XmlReader
                 if ($readfile && is_file($readfile)) {
                     $readfile = $readfile;
                 } else {
-                    if (!is_file($adminfile)) {
+                    if ($adminfile && !is_file($adminfile)) {
                         ReporticoUtility::findFileToInclude($adminfile, $readfile);
-                        if (is_file($readfile)) {
-                            $readfile = $readfile;
-                        }
-
-                    } else {
+                    } elseif ($adminfile && is_file($adminfile)) {
                         $use_admin_xml = true;
                         $readfile = $adminfile;
                     }
                 }
 
-                if ($readfile) {
+                if ($readfile && is_file($readfile)) {
                     //if ( $use_admin_xml )
                         //Authenticator::flag("admin-report-selected");
-                    if ( !file_exists($readfile) ) {
-                        ReporticoApp::backtrace();
-                    }
                     $x = join("", file($readfile));
+                } elseif ($this->search_tag) {
+                    // Menu title lookup for a non-report path; skip without fatal error
+                    $this->search_response = "";
+                } elseif ($readfile) {
+                    $report_path = ($this->query && $this->query->reports_path) ? $this->query->reports_path : $readfile;
+                    trigger_error("Report Definition File  " . $report_path . "/" . $filename . " Not Found", E_USER_ERROR);
                 } else {
-                    trigger_error("Report Definition File  " . $this->query->reports_path . "/" . $filename . " Not Found", E_USER_ERROR);
+                    $report_path = ($this->query && $this->query->reports_path) ? $this->query->reports_path : "";
+                    trigger_error("Report Definition File  " . $report_path . "/" . $filename . " Not Found", E_USER_ERROR);
                 }
 
             }
@@ -520,7 +525,8 @@ class XmlReader
 
         if ($x) {
             xml_parse($this->parser, $x);
-            xml_parser_free($this->parser);
+            // xml_parser_free() was deprecated in PHP 8.5 (no-op since 8.0).
+            // Parser is freed automatically when $this->parser goes out of scope.
         }
 
         //var_dump($this->data);
@@ -2306,7 +2312,7 @@ class XmlReader
                 break;
             case "mainqueroutppgft":$importtype = "IMPORT";
                 break;
-            default;
+            default:
                 $importtype = false;
         }
 

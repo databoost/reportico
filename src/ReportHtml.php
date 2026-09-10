@@ -343,6 +343,13 @@ class ReportHtml extends Report
      */
     public function closeGroup() {
 
+        // PHP 8.1+: writing to $this->currentGroup[...] when it is `false` triggers
+        // an "Automatic conversion of false to array" deprecation. Treat closeGroup()
+        // with no open group as a no-op, matching the behaviour of openGroup() init paths.
+        if (!is_array($this->currentGroup)) {
+            return;
+        }
+
         $x= $this->line_count;
         $this->currentGroup["endrow"] = $this->line_count - 1;
         $this->jar["pages"][$this->page_count]["rows"][$this->line_count]["closerowsection"] = true;

@@ -4963,7 +4963,7 @@ class Reportico extends ReporticoObject
                     }
 
                     $filename = $proj_parent . "/" . $project . "/" . $menuitem["reportfile"];
-                    if (!preg_match("/\.xml/", $filename)) {
+                    if (!preg_match("/\.xml$/i", $filename)) {
                         $filename .= ".xml";
                     }
 

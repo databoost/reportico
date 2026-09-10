@@ -352,6 +352,12 @@ class ReporticoApp
     // error handler function
     static function ErrorHandler($errno, $errstr, $errfile, $errline)
     {
+        // PHP 8.x: deprecations must not be stored as blocking "system errors" — Reportico treats
+        // anything in that list like a fatal in several execute paths (blank / broken pages).
+        if ($errno === E_DEPRECATED || $errno === E_USER_DEPRECATED) {
+            return true;
+        }
+
         switch ($errno) {
             case E_ERROR:
                 $errtype = ReporticoLang::translate("Error");

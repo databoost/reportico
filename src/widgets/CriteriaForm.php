@@ -98,9 +98,14 @@ $criteria
         }
 
 
+        $project = htmlspecialchars(ReporticoApp::getConfig("project", ""), ENT_QUOTES);
+        $xmlin = htmlspecialchars($this->engine->xmlinput ? $this->engine->xmlinput : "", ENT_QUOTES);
+
         $sections["begin"] = "
 <FORM class='reportico-prepare-form non-printable' id='reportico-form' method='POST' action='$submit_self'>
 <input type='hidden' name='reportico_session_name' value='$sessionId' />
+<input type='hidden' name='project' value='$project' />
+<input type='hidden' name='xmlin' value='$xmlin' />
         ";
 
         $sections["end"] = "</FORM>";

@@ -26,6 +26,11 @@ class DatePicker extends Widget
     public $range_raw = false;
     public $range_start = false;
     public $range_end = false;
+    // PHP 8.2+: declared explicitly to avoid Creation-of-dynamic-property deprecations
+    // (assigned in deriveValue()). Matches DateRangePicker / TimeRangePicker.
+    public $range_name = false;
+    public $range_start_raw = false;
+    public $range_end_raw = false;
 
     public $options = [
            "Today" => [
@@ -199,7 +204,6 @@ reportico_jquery(\'.reportico-date-field\').daterangepicker({
                     }
 
             }
-            echo $cls;
 
             $del = "";
             if ($add_del) {
